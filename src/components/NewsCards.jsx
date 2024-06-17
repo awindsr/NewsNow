@@ -1,8 +1,33 @@
 import { faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export default function NewsCards({ newsItem }) {
+  const [bookmarked, setBookmarked] = useState(false);
+
+  useEffect(() => {
+    // Check if the article is already bookmarked
+    const bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+    const isBookmarked = bookmarks.some(article => article.hashId === newsItem.hashId);
+    setBookmarked(isBookmarked);
+  }, [newsItem.hashId]);
+
+  const toggleBookmark = () => {
+    const bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+
+    if (bookmarked) {
+      // Remove bookmark
+      const updatedBookmarks = bookmarks.filter(article => article.hashId !== newsItem.hashId);
+      localStorage.setItem("bookmarks", JSON.stringify(updatedBookmarks));
+      setBookmarked(false);
+    } else {
+      // Add bookmark
+      bookmarks.push(newsItem);
+      localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+      setBookmarked(true);
+    }
+  };
+
   const calculateTimeAgo = (publishedAt) => {
     const publishedDate = new Date(publishedAt);
     const currentDate = new Date();
@@ -25,28 +50,30 @@ export default function NewsCards({ newsItem }) {
     }
   };
 
-
   return (
-    <div className="lg:w-1/4 md:w-[40vw] w-[30vw] flex flex-col gap-2 md:justify-around lg:items-start">
+    <div className="lg:w-1/4 md:w-[40vw] w-[35vw] flex flex-col gap-2 md:justify-around lg:items-start">
       <div>
-        <div className="relative">
+        <div className="relative w-full">
           <img
             src={newsItem.imageUrl}
             alt={newsItem.title}
-            className="md:w-96 md:h-72 w-auto h-[20vh] object-cover object-center"
+            className="md:w-96 md:h-72 w-full h-[20vh] object-cover object-center rounded-md"
           />
-          <FontAwesomeIcon icon={faBookmark} className="absolute top-2 right-2 bg-white text-[.8rem] lg:text-xl lg:p-4 p-2 rounded-full text-red-300" />
+          <FontAwesomeIcon
+            icon={faBookmark}
+            className={`absolute top-2 right-2 bg-white text-[.8rem] lg:text-xl lg:p-4 p-2 rounded-full ${bookmarked ? 'text-green-500' : 'text-red-300'}`}
+            onClick={toggleBookmark}
+          />
         </div>
       </div>
-      <div className=" w-full">
-        <p className="text-gray-600 text-[.8rem] md:Text-xl">
-          {/* {newsItem.author} . {calculateTimeAgo(newsItem.publishedAt)} */}
-          {newsItem.author} . {newsItem.date}. {newsItem.time}
+      <div className="w-full">
+        <p className="text-gray-600 text-[.6rem] md:text-xl">
+          {newsItem.author} . {calculateTimeAgo(newsItem.publishedAt)}
         </p>
-        <h1 className="lg:text-3xl md:text-2xl text font-medium">
+        <h1 className="lg:text-3xl md:text-2xl text-[.9rem] font-medium">
           {newsItem.title}
         </h1>
-        <h1 className=" text font-light">
+        <h1 className="text-[.8rem] md:text-[1rem] font-light">
           {newsItem.content.slice(0, 200)}...
           <span className="text-blue-500">Readmore</span>
         </h1>
