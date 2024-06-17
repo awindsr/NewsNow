@@ -58,7 +58,7 @@ const endIndex = startIndex + itemsPerPage;
             ):(
                 <section className="newsArea w-full h-auto flex flex-col p-8 gap-8">
                 <MainNewsCard newsItem={articles[0]} />
-                <div className="flex flex-wrap justify-center gap-8 ">
+                <div className="flex flex-wrap justify-between gap-8 ">
                   {articles.slice(startIndex, endIndex).map((article, index) => (
                     <NewsCards key={index} newsItem={article} />
                   ))}

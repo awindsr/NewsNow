@@ -1,6 +1,8 @@
+import { faBookmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 
-export default function NewsCards({newsItem }) {
+export default function NewsCards({ newsItem }) {
   const calculateTimeAgo = (publishedAt) => {
     const publishedDate = new Date(publishedAt);
     const currentDate = new Date();
@@ -23,14 +25,18 @@ export default function NewsCards({newsItem }) {
     }
   };
 
+
   return (
-    <div className="lg:w-1/4 w-1/3 flex flex-col gap-2 md:justify-around lg:items-start">
-         <div>
-        <img
-          src={newsItem.imageUrl}
-          alt={newsItem.title}
-          className="md:w-96 md:h-72 w-60 h-40 object-cover object-center"
-        />
+    <div className="lg:w-1/4 md:w-[40vw] w-[30vw] flex flex-col gap-2 md:justify-around lg:items-start">
+      <div>
+        <div className="relative">
+          <img
+            src={newsItem.imageUrl}
+            alt={newsItem.title}
+            className="md:w-96 md:h-72 w-auto h-[20vh] object-cover object-center"
+          />
+          <FontAwesomeIcon icon={faBookmark} className="absolute top-2 right-2 bg-white text-[.8rem] lg:text-xl lg:p-4 p-2 rounded-full text-red-300" />
+        </div>
       </div>
       <div className=" w-full">
         <p className="text-gray-600 text-[.8rem] md:Text-xl">
@@ -41,10 +47,10 @@ export default function NewsCards({newsItem }) {
           {newsItem.title}
         </h1>
         <h1 className=" text font-light">
-          {newsItem.content.slice(0, 200)}...<span className="text-blue-500">Readmore</span>
+          {newsItem.content.slice(0, 200)}...
+          <span className="text-blue-500">Readmore</span>
         </h1>
       </div>
-     
     </div>
   );
 }
