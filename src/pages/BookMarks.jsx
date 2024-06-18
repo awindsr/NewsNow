@@ -15,13 +15,8 @@ export default function BookMarks() {
         setBookmarks(localData ? JSON.parse(localData) : []);
     }, []);
 
-    const toggleBookmark = (article) => {
-        let updatedBookmarks;
-        if (bookmarks.some(item => item.hashId === article.hashId)) {
-            updatedBookmarks = bookmarks.filter(item => item.hashId !== article.hashId);
-        } else {
-            updatedBookmarks = [...bookmarks, article];
-        }
+    const removeBookmark = (article) => {
+        const updatedBookmarks = bookmarks.filter(item => item.hashId !== article.hashId);
         setBookmarks(updatedBookmarks);
         localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
     };
@@ -59,7 +54,7 @@ export default function BookMarks() {
                 <div className="flex flex-wrap justify-center gap-4">
                     {bookmarks.map((article) => (
                         <div key={article.hashId} className="lg:w-1/4 md:w-[40vw] w-[35vw] p-9 flex flex-col gap-2 md:justify-around lg:items-start">
-                            <div >
+                            <div>
                                 <div className="relative w-full">
                                     <img
                                         src={article.imageUrl}
@@ -68,7 +63,7 @@ export default function BookMarks() {
                                     />
                                     <FontAwesomeIcon
                                         icon={faBookmark}
-                                        onClick={() => toggleBookmark(article)}
+                                        onClick={() => removeBookmark(article)}
                                         className="absolute top-2 right-2 text-3xl text-green-500 cursor-pointer"
                                     />
                                 </div>

@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import DetailedModal from "./DetailedModal"; // Make sure to import DetailedModal
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedNewsItem, setSelectedNewsItem] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,7 +22,6 @@ export default function Header() {
           const result = await response.json();
           if (result.status === "SUCCESS" && result.data.articles) {
             setSuggestions(result.data.articles);
-            // console.log(result.data)
           }
         } catch (error) {
           console.error("Error fetching suggestions:", error);
@@ -32,9 +34,18 @@ export default function Header() {
     }
   }, [query]);
 
-  // console.log(query)
+  const handleSuggestionClick = (suggestion) => {
+    setSelectedNewsItem(suggestion);
+    setIsModalOpen(true);
+    setSuggestions([]);
+  };
 
-  console.log(suggestions);
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedNewsItem(null);
+  };
+
+  console.log(suggestions)
 
   return (
     <div className="font-newsreader p-4 flex items-center justify-between w-full relative">
@@ -55,11 +66,9 @@ export default function Header() {
               <div
                 key={index}
                 className="px-4 py-2 cursor-pointer hover:bg-gray-200"
-                onClick={() => {
-                  setQuery(suggestion.title);
-                  setSuggestions([]);
-                }}>
-                <div className="flex gap-2" onClick={() => { window.location.href = suggestion.sourceUrl; }}>
+                onClick={() => handleSuggestionClick(suggestion)}
+              >
+                <div className="flex gap-2">
                   <img
                     src={suggestion.imageUrl}
                     alt={suggestion.title}
@@ -78,16 +87,20 @@ export default function Header() {
         NewsNow.
       </h1>
       <div className="hidden md:flex gap-3">
-        <button onClick={()=>navigate("/bookmarks")} className="px-4 py-2 border border-black text-black rounded-full text-xl flex items-center justify-center">
-            Bookmarks
-          </button>
+        <button
+          onClick={() => navigate("/bookmarks")}
+          className="px-4 py-2 border border-black text-black rounded-full text-xl flex items-center justify-center"
+        >
+          Bookmarks
+        </button>
         <button className="px-4 py-2 bg-black text-white rounded-full text-xl flex items-center justify-center">
           Subscribe
         </button>
       </div>
       <button
         className="md:hidden text-2xl focus:outline-none"
-        onClick={() => setMenuOpen(!menuOpen)}>
+        onClick={() => setMenuOpen(!menuOpen)}
+      >
         <FontAwesomeIcon icon={menuOpen ? faTimes : faBars} />
       </button>
       {menuOpen && (
@@ -98,7 +111,7 @@ export default function Header() {
               placeholder="Search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full pl-4 pr-10 py-2 rounded-full border border-gray-700 bg-primaryBg  focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full pl-4 pr-10 py-2 rounded-full border border-gray-700 bg-primaryBg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
               <FontAwesomeIcon icon={faSearch} className="text-gray-600" />
@@ -109,20 +122,18 @@ export default function Header() {
                   <div
                     key={index}
                     className="px-4 py-2 cursor-pointer hover:bg-gray-200"
-                    onClick={() => {
-                      setQuery(suggestion);
-                      setSuggestions([]);
-                    }}>
-                   <div className="flex gap-2" onClick={() => { window.location.href = suggestion.sourceUrl; }}>
-                  <img
-                    src={suggestion.imageUrl}
-                    alt={suggestion.title}
-                    className="w-10 h-10 object-cover object-center rounded-md"
-                  />
-                  <div>
-                    <h1 className="text-[.7rem] font-medium">{suggestion.title}</h1>
-                  </div>
-                </div>
+                    onClick={() => handleSuggestionClick(suggestion)}
+                  >
+                    <div className="flex gap-2">
+                      <img
+                        src={suggestion.imageUrl}
+                        alt={suggestion.title}
+                        className="w-10 h-10 object-cover object-center rounded-md"
+                      />
+                      <div>
+                        <h1 className="text-[.7rem] font-medium">{suggestion.title}</h1>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -135,6 +146,14 @@ export default function Header() {
             Subscribe
           </button>
         </div>
+      )}
+      {isModalOpen && (
+        <DetailedModal
+          isOpen={isModalOpen}
+          closeModal={closeModal}
+          newsItem={selectedNewsItem}
+          readMoreUrl={selectedNewsItem.sourceUrl}
+        />
       )}
     </div>
   );
