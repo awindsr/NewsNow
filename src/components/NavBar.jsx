@@ -26,7 +26,7 @@ export default function NavBar() {
           <li
             key={category}
             onClick={() => dispatch(setSelectedCategory(category.toLowerCase()))}
-            className={`text-xl font-medium ${category.toLowerCase() === selectedCategory.toLowerCase() ? 'text-green-500' : 'text-primary'}`}
+            className={`cursor-pointer text-xl font-medium ${category.toLowerCase() === selectedCategory.toLowerCase() ? 'text-green-500' : 'text-primary'}`}
           >
             {category}
           </li>

@@ -101,7 +101,7 @@ export default function Header() {
           </div>
         )}
       </div>
-      <h1 className="font-medium text-4xl absolute left-1/2 transform -translate-x-1/2">
+      <h1 className="cursor-pointer font-medium text-4xl absolute left-1/2 transform -translate-x-1/2" onClick={() => navigate("/")}>
         NewsNow.
       </h1>
       <div className="hidden md:flex gap-3">
