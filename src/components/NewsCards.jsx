@@ -75,10 +75,10 @@ export default function NewsCards({ newsItem }) {
         <p className="text-gray-600 text-[.5rem] md:text-[.8rem]">
           {newsItem.author} . {newsItem.date} . {newsItem.time}
         </p>
-        <h1 className="lg:text-3xl md:text-2xl text-[.9rem] font-medium">
+        <h1 className="lg:text-3xl md:text-2xl text-justify text-[.9rem] font-medium">
           {newsItem.title}
         </h1>
-        <h1 className="text-[.8rem] md:text-[1rem] font-light">
+        <h1 className="text-[.8rem] md:text-[1rem] font-light text-justify">
           {newsItem.content.slice(0, 200)}...
           <span className="text-blue-500 cursor-pointer" onClick={openModal}>
             Read more
