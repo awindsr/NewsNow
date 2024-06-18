@@ -1,25 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBookmark } from '@fortawesome/free-solid-svg-icons';
+import { removeBookmark } from '../redux/actions'; // Import action to remove bookmark
 
 export default function BookMarks() {
-    const [bookmarks, setBookmarks] = useState(() => {
-        const localData = localStorage.getItem('bookmarks');
-        return localData ? JSON.parse(localData) : [];
-    });
-
-    useEffect(() => {
-        const localData = localStorage.getItem('bookmarks');
-        setBookmarks(localData ? JSON.parse(localData) : []);
-    }, []);
-
-    const removeBookmark = (article) => {
-        const updatedBookmarks = bookmarks.filter(item => item.hashId !== article.hashId);
-        setBookmarks(updatedBookmarks);
-        localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
-    };
+    const bookmarks = useSelector(state => state.bookmarks); // Fetch bookmarks from Redux store
+    const dispatch = useDispatch();
 
     const calculateTimeAgo = (publishedAt) => {
         const publishedDate = new Date(publishedAt);
@@ -43,6 +32,10 @@ export default function BookMarks() {
         }
     };
 
+    const handleRemoveBookmark = (article) => {
+        dispatch(removeBookmark(article)); // Dispatch action to remove bookmark
+    };
+
     return (
         <div>
             <Header />
@@ -63,7 +56,7 @@ export default function BookMarks() {
                                     />
                                     <FontAwesomeIcon
                                         icon={faBookmark}
-                                        onClick={() => removeBookmark(article)}
+                                        onClick={() => handleRemoveBookmark(article)}
                                         className="absolute top-2 right-2 text-3xl text-green-500 cursor-pointer"
                                     />
                                 </div>

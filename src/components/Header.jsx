@@ -1,8 +1,11 @@
+// Header.jsx
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import DetailedModal from "./DetailedModal"; // Make sure to import DetailedModal
+import { useSelector, useDispatch } from 'react-redux';
+import { setArticles } from '../redux/actions';
+import DetailedModal from "./DetailedModal";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -11,6 +14,8 @@ export default function Header() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedNewsItem, setSelectedNewsItem] = useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const articles = useSelector(state => state.articles);
 
   useEffect(() => {
     if (query.length > 0) {
@@ -45,7 +50,20 @@ export default function Header() {
     setSelectedNewsItem(null);
   };
 
-  console.log(suggestions)
+  useEffect(() => {
+    const fetchArticles = async () => {
+      const requestOptions = { method: 'GET' };
+
+      try {
+        const response = await fetch(`https://inshortnews-c68f4d9c3ca9.herokuapp.com/news?category=${query}`);
+        dispatch(setArticles(response.data.data));
+      } catch (error) {
+        console.error("Error fetching articles:", error);
+      }
+    };
+
+    fetchArticles();
+  }, [query, dispatch]);
 
   return (
     <div className="font-newsreader p-4 flex items-center justify-between w-full relative">

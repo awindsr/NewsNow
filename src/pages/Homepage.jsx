@@ -1,20 +1,29 @@
-import React, { useState, useEffect } from "react";
+// Homepage.jsx
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setArticles,
+  setSelectedCategory,
+  setCurrentPage,
+} from "../redux/actions";
+import axios from "axios";
 import Header from "../components/Header";
 import NavBar from "../components/NavBar";
 import MainNewsCard from "../components/MainNewsCard";
 import NewsCards from "../components/NewsCards";
-import axios from "axios";
+import Footer from "../components/Footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
-import Footer from "../components/Footer";
 
 export default function Homepage() {
-  const [articles, setArticles] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("sports");
-  const [currentPage, setCurrentPage] = useState(1);
+  const dispatch = useDispatch();
+  const articles = useSelector((state) => state.articles);
+  const selectedCategory = useSelector((state) => state.selectedCategory);
+  const currentPage = useSelector((state) => state.currentPage);
+
   const itemsPerPage = 6;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -22,38 +31,26 @@ export default function Homepage() {
 
   useEffect(() => {
     const fetchArticles = async () => {
-      const requestOptions = {
-        method: "GET",
-      };
-
-      try {
-        const response = await axios.get(
-          `${baseurl}news?category=${selectedCategory}`
-        );
-
-        setArticles(response.data.data);
-        console.log(response.data); // Assuming 'articles' is the key for articles in the response
-      } catch (error) {
-        console.log("Error fetching data:", error);
+      const requestOptions = { method: "GET" };
+      if (selectedCategory) {
+        try {
+          const response = await axios.get(
+            `${baseurl}news?category=${selectedCategory}`
+          );
+          dispatch(setArticles(response.data.data));
+        } catch (error) {
+          console.log("Error fetching data:", error);
+        }
       }
     };
 
     fetchArticles();
-  }, [selectedCategory]);
-  console.log(articles);
+  }, [selectedCategory, dispatch]);
 
   return (
     <div className="w-screen h-auto bg-primaryBg">
-      <div>
-        <Header />
-      </div>
-      <div>
-        <NavBar
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-        />
-      </div>
-
+      <Header />
+      <NavBar />
       {articles.length === 0 ? (
         <div className="flex items-center justify-center h-96">
           <p className="text-2xl">Loading...</p>
@@ -66,11 +63,10 @@ export default function Homepage() {
               <NewsCards key={index} newsItem={article} />
             ))}
           </div>
-
           <div className="pagination w-full flex items-center justify-center mt-8 mb-8">
             <button
               className="h-10 px-5 text-green-600 transition-colors duration-150 rounded-l-lg focus:shadow-outline hover:bg-green-10"
-              onClick={() => setCurrentPage(currentPage - 1)}
+              onClick={() => dispatch(setCurrentPage(currentPage - 1))}
               disabled={currentPage === 1}>
               <FontAwesomeIcon icon={faChevronLeft} />
             </button>
@@ -80,7 +76,7 @@ export default function Homepage() {
             {currentPage < 2 ? (
               <button
                 className="h-10 px-5 text-green-600 transition-colors duration-150 rounded-l-lg focus:shadow-outline hover:bg-green-10"
-                onClick={() => setCurrentPage(currentPage + 1)}
+                onClick={() => dispatch(setCurrentPage(currentPage + 1))}
                 disabled={currentPage === 2}>
                 <FontAwesomeIcon icon={faChevronRight} />
               </button>
@@ -90,8 +86,7 @@ export default function Homepage() {
           </div>
         </section>
       )}
-<Footer/>
-      
+      <Footer />
     </div>
   );
 }
